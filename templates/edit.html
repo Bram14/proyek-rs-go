@@ -1,0 +1,61 @@
+{{template "layout.html" .}}
+
+{{define "title"}}Edit Data Pasien{{end}}
+
+{{define "content"}}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="mb-0">📝 Edit Data Pasien</h2>
+    </div>
+    <div class="card-body">
+        <form action="/edit-pasien" method="POST">
+            <input type="hidden" name="id" value="{{.ID}}" />
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" name="nama_pasien" value="{{.Nama}}" required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Usia</label>
+                    <input type="number" class="form-control" name="usia" value="{{.Usia}}" required />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jenis Kelamin</label>
+                    <select name="jenis_kelamin" class="form-select" required>
+                        <option value="Laki-laki" {{if eq .JenisKelamin "Laki-laki"}}selected{{end}}>Laki-laki</option>
+                        <option value="Perempuan" {{if eq .JenisKelamin "Perempuan"}}selected{{end}}>Perempuan</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tanggal Lahir</label>
+             <input type="date" ... value="{{if .TanggalLahir.Valid}}{{.TanggalLahir.Time.Format "2006-01-02"}}{{end}}" ... />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Alamat</label>
+                <textarea name="alamat" class="form-control" rows="3">{{.Alamat}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Riwayat Penyakit</label>
+               <textarea ...>{{if .RiwayatPenyakit.Valid}}{{.RiwayatPenyakit.String}}{{end}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">No. Telepon</label>
+                <input type="text" class="form-control" name="telepon" value="{{.Telepon}}" required />
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <a href="/" class="btn btn-secondary me-2">Batal</a>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+{{end}}

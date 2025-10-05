@@ -1,0 +1,112 @@
+{{template "layout.html" .}} {{define "title"}}Registrasi Pasien Baru{{end}}
+{{define "content"}}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h2 class="mb-0">Form Registrasi Pasien</h2>
+      </div>
+      <div class="card-body">
+        <form action="/registrasi-pasien" method="POST">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="id_pasien" class="form-label">ID Pasien</label>
+              <input
+                type="text"
+                class="form-control"
+                id="id_pasien"
+                name="id_pasien"
+                placeholder="Contoh: PSN-001"
+                required
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="nama_pasien" class="form-label">Nama Lengkap</label>
+              <input
+                type="text"
+                class="form-control"
+                id="nama_pasien"
+                name="nama_pasien"
+                required
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="usia" class="form-label">Usia</label>
+              <input
+                type="number"
+                class="form-control"
+                id="usia"
+                name="usia"
+                min="0"
+                required
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="jenis_kelamin" class="form-label"
+                >Jenis Kelamin</label
+              >
+              <select
+                class="form-select"
+                id="jenis_kelamin"
+                name="jenis_kelamin"
+                required
+              >
+                <option value="">-- Pilih --</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+            <input
+              type="date"
+              class="form-control"
+              id="tanggal_lahir"
+              name="tanggal_lahir"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <textarea
+              class="form-control"
+              id="alamat"
+              name="alamat"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="telepon" class="form-label">No. Telepon</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="telepon"
+              name="telepon"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="riwayat_penyakit" class="form-label"
+              >Riwayat Penyakit</label
+            >
+            <textarea
+              class="form-control"
+              id="riwayat_penyakit"
+              name="riwayat_penyakit"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <a href="/" class="btn btn-secondary me-2">Batal</a>
+            <button type="submit" class="btn btn-primary">Daftar Pasien</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

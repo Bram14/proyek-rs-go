@@ -1,0 +1,117 @@
+{{template "layout.html" .}} {{define "title"}}Detail Pasien -
+{{.PasienData.Nama}}{{end}} {{define "content"}}
+<div class="card mb-4">
+  <div class="card-header">
+    <h3 class="mb-0">🧑‍⚕️ Detail Pasien</h3>
+  </div>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <tr>
+        <th style="width: 200px">ID Pasien</th>
+        <td>{{.PasienData.ID}}</td>
+      </tr>
+      <tr>
+        <th>Nama</th>
+        <td>{{.PasienData.Nama}}</td>
+      </tr>
+      <tr>
+        <th>Usia</th>
+        <td>{{.PasienData.Usia}}</td>
+      </tr>
+      <tr>
+        <th>Jenis Kelamin</th>
+        <td>{{.PasienData.JenisKelamin}}</td>
+      </tr>
+      <tr>
+        <th>Tanggal Lahir</th>
+        <td>
+          {{if .PasienData.TanggalLahir.Valid}}
+          {{.PasienData.TanggalLahir.Time.Format "02 January 2006"}} {{else}} -
+          {{end}}
+        </td>
+      </tr>
+      <tr>
+        <th>Alamat</th>
+        <td>{{.PasienData.Alamat}}</td>
+      </tr>
+      <tr>
+        <th>Riwayat Penyakit</th>
+        <td>
+          {{if .PasienData.RiwayatPenyakit.Valid}}
+          {{.PasienData.RiwayatPenyakit.String}} {{else}} - {{end}}
+        </td>
+      </tr>
+      <tr>
+        <th>No. Telepon</th>
+        <td>{{.PasienData.Telepon}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="mb-0">💳 Riwayat Transaksi</h3>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID Transaksi</th>
+          <th>Deskripsi</th>
+          <th class="text-end">Biaya (Rp)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .TransaksiData}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Deskripsi}}</td>
+          <td class="text-end">{{printf "%.0f" .TotalBiaya}}</td>
+        </tr>
+        {{else}}
+        <tr>
+          <td colspan="3" class="text-center">Belum ada data transaksi.</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <h3 class="mb-0">➕ Tambah Transaksi Baru</h3>
+  </div>
+  <div class="card-body">
+    <form action="/tambah-transaksi" method="POST">
+      <input type="hidden" name="pasien_id" value="{{.PasienData.ID}}" />
+      <div class="mb-3">
+        <label for="deskripsi" class="form-label">Deskripsi Transaksi</label>
+        <input
+          type="text"
+          class="form-control"
+          id="deskripsi"
+          name="deskripsi"
+          placeholder="Contoh: Biaya Konsultasi Dokter"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="total_biaya" class="form-label">Total Biaya (Rp)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="total_biaya"
+          name="total_biaya"
+          placeholder="Contoh: 150000"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-success">Simpan Transaksi</button>
+    </form>
+  </div>
+</div>
+
+<a href="/" class="btn btn-secondary mt-4">⬅ Kembali ke Daftar Pasien</a>
+{{end}}
