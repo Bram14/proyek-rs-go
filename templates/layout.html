@@ -64,7 +64,49 @@
       <p>&copy; 2025 Rumah Sakit Harapan Sehat</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Jalankan skrip ini setelah seluruh halaman HTML selesai dimuat
+      document.addEventListener("DOMContentLoaded", function () {
+        // Cari semua tombol yang punya class 'btn-hapus'
+        const tombolHapus = document.querySelectorAll(".btn-hapus");
+
+        // Untuk setiap tombol hapus yang ditemukan, tambahkan event listener
+        tombolHapus.forEach((tombol) => {
+          tombol.addEventListener("click", function () {
+            // Ambil ID dan nama pasien dari atribut data-*
+            const pasienID = this.dataset.id;
+            const pasienNama = this.dataset.nama;
+
+            // Tampilkan dialog konfirmasi
+            const yakin = confirm(
+              `Apakah Anda yakin ingin menghapus pasien "${pasienNama}"?`
+            );
+
+            // Jika pengguna menekan "OK" (yakin = true)
+            if (yakin) {
+              // Kirim permintaan hapus ke server di belakang layar (AJAX)
+              fetch(`/hapus-pasien?id=${pasienID}`, {
+                method: "DELETE", // Menggunakan metode DELETE
+              })
+                .then((response) => {
+                  // Periksa apakah server merespons dengan "sukses"
+                  if (response.ok) {
+                    // Jika sukses, cari baris tabel (tr) terdekat dari tombol yang diklik dan hapus
+                    this.closest("tr").remove();
+                  } else {
+                    // Jika gagal, tampilkan pesan error
+                    alert("Gagal menghapus pasien.");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  alert("Terjadi kesalahan.");
+                });
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>
 {{end}}

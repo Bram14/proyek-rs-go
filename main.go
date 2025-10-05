@@ -362,23 +362,36 @@ func editPasienHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func hapusPasienHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Metode tidak diizinkan", http.StatusMethodNotAllowed)
-		return
-	}
-	id := r.FormValue("id")
-	
-	_, err := db.Exec("DELETE FROM transaksi WHERE pasien_id = ?", id)
-	if err != nil {
-		http.Error(w, "Gagal hapus transaksi terkait pasien", http.StatusInternalServerError)
-		return
-	}
-	_, err = db.Exec("DELETE FROM pasien WHERE id = ?", id)
-	if err != nil {
-		http.Error(w, "Gagal hapus pasien", http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+    // Izinkan hanya metode DELETE
+    if r.Method != http.MethodDelete {
+        http.Error(w, "Metode tidak diizinkan", http.StatusMethodNotAllowed)
+        return
+    }
+
+    // Ambil ID dari URL query, bukan dari form
+    id := r.URL.Query().Get("id")
+    if id == "" {
+        http.Error(w, "ID Pasien tidak boleh kosong", http.StatusBadRequest)
+        return
+    }
+
+    // Hapus transaksi terkait terlebih dahulu untuk menjaga integritas data
+    _, err := db.Exec("DELETE FROM transaksi WHERE pasien_id = ?", id)
+    if err != nil {
+        http.Error(w, "Gagal hapus transaksi terkait pasien: "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Hapus data pasien
+    _, err = db.Exec("DELETE FROM pasien WHERE id = ?", id)
+    if err != nil {
+        http.Error(w, "Gagal hapus pasien: "+err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Kirim balasan status "OK" (200), tanpa redirect.
+    // Ini akan diterima oleh .then(response => ...) di JavaScript
+    w.WriteHeader(http.StatusOK)
 }
 
 

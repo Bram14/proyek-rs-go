@@ -1,9 +1,9 @@
 {{template "layout.html" .}} {{define "title"}}Daftar Pasien{{end}} {{define
 "content"}}
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="mb-0">📋 Daftar Pasien</h1>
-  <a href="/registrasi-pasien" class="btn btn-primary"
-    >➕ Registrasi Pasien Baru</a
+  <h1 class="mb-0">Daftar Pasien</h1>
+  <a href="/registrasi-pasien" class="btn btn-primary">
+    Registrasi Pasien Baru</a
   >
 </div>
 
@@ -31,20 +31,13 @@
             <a href="/edit-pasien?id={{.ID}}" class="btn btn-warning btn-sm"
               >Edit</a
             >
-            <form
-              action="/hapus-pasien"
-              method="POST"
-              style="display: inline-block"
+            <button
+              class="btn btn-danger btn-sm btn-hapus"
+              data-id="{{.ID}}"
+              data-nama="{{.Nama}}"
             >
-              <input type="hidden" name="id" value="{{.ID}}" />
-              <button
-                type="submit"
-                class="btn btn-danger btn-sm"
-                onclick="return confirm('Yakin ingin menghapus pasien {{.Nama}}? Semua transaksi terkait juga akan dihapus.')"
-              >
-                Hapus
-              </button>
-            </form>
+              Hapus
+            </button>
           </td>
         </tr>
         {{else}}
