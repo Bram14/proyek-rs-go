@@ -13,18 +13,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// ================= MODEL =================
-// main.go
+
 
 type Pasien struct {
     ID              string
     Nama            string
     Usia            int
     JenisKelamin    string
-    TanggalLahir    sql.NullTime   // Tetap seperti ini
-    Alamat          string         // Asumsi Alamat tidak pernah NULL
-    RiwayatPenyakit sql.NullString // GANTI DI SINI
-    Telepon         string         // Asumsi Telepon tidak pernah NULL
+    TanggalLahir    sql.NullTime   
+    Alamat          string         
+    RiwayatPenyakit sql.NullString 
+    Telepon         string         
 }
 
 type Transaksi struct {
@@ -44,13 +43,12 @@ type DashboardData struct {
 	TotalBiaya     float64
 }
 
-// ================= GLOBAL =================
+
 var db *sql.DB
 var templates map[string]*template.Template
 
-// ================= INISIALISASI =================
+
 func init() {
-	// Koneksi ke database
 	dsn := "root:@tcp(127.0.0.1:3306)/rs_db?parseTime=true"
 	var err error
 	db, err = sql.Open("mysql", dsn)
@@ -63,20 +61,20 @@ func init() {
 	}
 	fmt.Println("✅ Berhasil terhubung ke database MySQL!")
 
-	// Load semua template dengan layout-nya
+
 	loadTemplates()
 }
 
 func loadTemplates() {
 	templates = make(map[string]*template.Template)
 
-	// Cari semua file yang menjadi "halaman" (bukan partial atau layout)
+
 	pages, err := filepath.Glob("templates/*.html")
 	if err != nil {
 		log.Fatal("Gagal mencari file template:", err)
 	}
 	
-	// Layouts yang akan digabungkan dengan setiap halaman
+
 	layouts, err := filepath.Glob("templates/layout.html")
 	if err != nil {
 		log.Fatal("Gagal mencari file layout:", err)
@@ -84,18 +82,15 @@ func loadTemplates() {
 
 
 	for _, page := range pages {
-		// Abaikan file layout agar tidak diparse sebagai halaman mandiri
 		if filepath.Base(page) == "layout.html" || filepath.Base(page) == "login.html" {
 			continue
 		}
 
-		// Gabungkan file layout dengan file halaman
+
 		files := append(layouts, page)
 		
 		name := filepath.Base(page)
 		
-		// `template.New(name)` penting agar kita bisa memanggil template berdasarkan nama filenya
-		// `Funcs(funcMap)` bisa ditambahkan jika perlu fungsi helper di template
 		tmpl, err := template.New(name).ParseFiles(files...)
 		if err != nil {
 			log.Fatalf("Gagal parse template %s: %v", name, err)
@@ -103,7 +98,7 @@ func loadTemplates() {
 		templates[name] = tmpl
 	}
 	
-	// Load template login.html secara terpisah karena tidak pakai layout
+
 	tmplLogin, err := template.ParseFiles("templates/login.html")
     if err != nil {
         log.Fatal("Gagal parse login.html:", err)
@@ -114,7 +109,6 @@ func loadTemplates() {
 	fmt.Println("✅ Semua template berhasil di-load!")
 }
 
-// Helper untuk merender template
 func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
 	tmpl, ok := templates[tmplName]
 	if !ok {
@@ -122,12 +116,10 @@ func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
 		return
 	}
 	
-	// Untuk template yang menggunakan layout, kita perlu ExecuteTemplate dengan nama basenya
-	// Untuk yang mandiri (seperti login), kita Execute biasa.
-	// Dengan ParseFiles, nama template utama adalah nama file itu sendiri.
+
 	err := tmpl.ExecuteTemplate(w, "layout.html", data)
 	if err != nil {
-		// Jika gagal, coba render tanpa layout (untuk kasus seperti login.html)
+	
 		err = tmpl.Execute(w, data)
 		if err != nil {
 			log.Printf("Gagal render template %s: %v", tmplName, err)
@@ -137,9 +129,8 @@ func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
 }
 
 
-// ================= MAIN =================
 func main() {
-	defer db.Close() // Pastikan koneksi DB ditutup saat program berakhir
+	defer db.Close() 
 
 	// Routing
 	http.HandleFunc("/", authMiddleware(homeHandler))
@@ -152,13 +143,12 @@ func main() {
 	http.HandleFunc("/hapus-pasien", authMiddleware(hapusPasienHandler))
 	http.HandleFunc("/tambah-transaksi", authMiddleware(tambahTransaksiHandler))
 
-	// Jalankan server
 	port := ":8080"
 	fmt.Printf("🚀 Server berjalan di http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
-// ================= HANDLER (TIDAK ADA PERUBAHAN BESAR, HANYA CARA RENDER) =================
+
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT id, nama, usia, jenis_kelamin, tanggal_lahir, alamat, riwayat_penyakit, telepon FROM pasien ORDER BY nama ASC")
@@ -172,7 +162,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var p Pasien
 		if err := rows.Scan(&p.ID, &p.Nama, &p.Usia, &p.JenisKelamin, &p.TanggalLahir, &p.Alamat, &p.RiwayatPenyakit, &p.Telepon); err != nil {
-			log.Println("Error scanning pasien:", err) // Log error jika ada
+			log.Println("Error scanning pasien:", err) 
 			continue
 		}
 		daftarPasien = append(daftarPasien, p)
@@ -301,7 +291,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			})
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		} else {
-			// Sebaiknya berikan feedback di halaman login
+		
 			renderTemplate(w, "login.html", "Login gagal! Username/password salah")
 		}
 	default:
@@ -313,7 +303,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_token",
 		Value:   "",
-		Expires: time.Now().Add(-1 * time.Hour), // Set kedaluwarsa di masa lalu
+		Expires: time.Now().Add(-1 * time.Hour),
 		Path:    "/",
 	})
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -377,7 +367,7 @@ func hapusPasienHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := r.FormValue("id")
-	// Sebaiknya hapus transaksi terkait dulu untuk menjaga integritas data
+	
 	_, err := db.Exec("DELETE FROM transaksi WHERE pasien_id = ?", id)
 	if err != nil {
 		http.Error(w, "Gagal hapus transaksi terkait pasien", http.StatusInternalServerError)
