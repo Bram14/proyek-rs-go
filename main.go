@@ -59,7 +59,7 @@ func init() {
 	if err = db.Ping(); err != nil {
 		log.Fatal("Database tidak bisa diakses:", err)
 	}
-	fmt.Println("✅ Berhasil terhubung ke database MySQL!")
+	fmt.Println(" Berhasil terhubung ke database MySQL!")
 
 
 	loadTemplates()
@@ -106,7 +106,7 @@ func loadTemplates() {
     templates["login.html"] = tmplLogin
 
 
-	fmt.Println("✅ Semua template berhasil di-load!")
+	fmt.Println(" Semua template berhasil di-load!")
 }
 
 func renderTemplate(w http.ResponseWriter, tmplName string, data interface{}) {
@@ -144,7 +144,7 @@ func main() {
 	http.HandleFunc("/tambah-transaksi", authMiddleware(tambahTransaksiHandler))
 
 	port := ":8080"
-	fmt.Printf("🚀 Server berjalan di http://localhost%s\n", port)
+	fmt.Printf(" Server berjalan di http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
@@ -362,35 +362,32 @@ func editPasienHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func hapusPasienHandler(w http.ResponseWriter, r *http.Request) {
-    // Izinkan hanya metode DELETE
+ 
     if r.Method != http.MethodDelete {
         http.Error(w, "Metode tidak diizinkan", http.StatusMethodNotAllowed)
         return
     }
 
-    // Ambil ID dari URL query, bukan dari form
+   
     id := r.URL.Query().Get("id")
     if id == "" {
         http.Error(w, "ID Pasien tidak boleh kosong", http.StatusBadRequest)
         return
     }
 
-    // Hapus transaksi terkait terlebih dahulu untuk menjaga integritas data
+   
     _, err := db.Exec("DELETE FROM transaksi WHERE pasien_id = ?", id)
     if err != nil {
         http.Error(w, "Gagal hapus transaksi terkait pasien: "+err.Error(), http.StatusInternalServerError)
         return
     }
 
-    // Hapus data pasien
     _, err = db.Exec("DELETE FROM pasien WHERE id = ?", id)
     if err != nil {
         http.Error(w, "Gagal hapus pasien: "+err.Error(), http.StatusInternalServerError)
         return
     }
 
-    // Kirim balasan status "OK" (200), tanpa redirect.
-    // Ini akan diterima oleh .then(response => ...) di JavaScript
     w.WriteHeader(http.StatusOK)
 }
 
